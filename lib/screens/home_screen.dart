@@ -5,7 +5,7 @@ import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/models/chat_user.dart';
 import 'package:we_chat/screens/auth/profile_screen.dart';
-import 'package:we_chat/widgets/chat_user_cart.dart';
+import 'package:we_chat/widgets/chat_user_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

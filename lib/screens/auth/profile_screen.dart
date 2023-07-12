@@ -71,16 +71,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderRadius: BorderRadius.circular(mq.height * .1),
                               child: Image.file(
                                 File(_image!),
-                                width: mq.height * .2,
-                                height: mq.width * .2,
+                                width: mq.height * .15,
+                                height: mq.width * .23,
                                 fit: BoxFit.cover,
                               ),
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(mq.height * .1),
                               child: CachedNetworkImage(
-                                width: mq.height * .2,
-                                height: mq.width * .2,
+                                width: mq.height * .15,
+                                height: mq.width * .23,
                                 fit: BoxFit.cover,
                                 imageUrl: widget.user.image,
                                 errorWidget: (context, url, error) => const CircleAvatar(
@@ -91,8 +91,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                       Positioned(
-                          bottom: 0,
-                          right: 0,
+                          top: 55,
+                          left: 55,
                           child: MaterialButton(
                             elevation: 1,
                             onPressed: () {
