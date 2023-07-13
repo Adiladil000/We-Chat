@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:we_chat/api/apis.dart';
@@ -21,55 +24,81 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Message> _list = [];
   final _textController = TextEditingController();
 
+  bool _showEmoji = false;
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 234, 248, 255),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: _appBar(),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder(
-                stream: APIs.getAllMessages(widget.user),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.none:
-                      return const SizedBox();
-                    case ConnectionState.active:
-                    case ConnectionState.done:
-                      final data = snapshot.data?.docs;
-                      _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
-                      if (_list.isNotEmpty) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.only(top: mq.height * .01),
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: _list.length,
-                          itemBuilder: (context, index) {
-                            return MessageCard(
-                              message: _list[index],
-                            );
-                          },
-                        );
-                      } else {
-                        return const Center(
-                          child: Text(
-                            "Say Hii ! 👋",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                        );
-                      }
-                  }
-                },
-              ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        //if search is on & back button is pressed then close search
+        //or else simple close current screen on back button click
+        child: WillPopScope(
+          onWillPop: () {
+            if (_showEmoji) {
+              setState(() {
+                _showEmoji = !_showEmoji;
+              });
+              return Future.value(false);
+            }
+            return Future.value(true);
+          },
+          child: Scaffold(
+            backgroundColor: const Color.fromARGB(255, 234, 248, 255),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: _appBar(),
             ),
-            _chatInput()
-          ],
+            body: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder(
+                    stream: APIs.getAllMessages(widget.user),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.none:
+                          return const SizedBox();
+                        case ConnectionState.active:
+                        case ConnectionState.done:
+                          final data = snapshot.data?.docs;
+                          _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+                          if (_list.isNotEmpty) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.only(top: mq.height * .01),
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _list.length,
+                              itemBuilder: (context, index) {
+                                return MessageCard(
+                                  message: _list[index],
+                                );
+                              },
+                            );
+                          } else {
+                            return const Center(
+                              child: Text(
+                                "Say Hii ! 👋",
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                            );
+                          }
+                      }
+                    },
+                  ),
+                ),
+                _chatInput(),
+                if (_showEmoji)
+                  SizedBox(
+                    height: mq.height * .35,
+                    child: EmojiPicker(
+                      textEditingController: _textController,
+                      config: Config(bgColor: const Color.fromARGB(255, 234, 248, 255), columns: 7, emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0)),
+                    ),
+                  )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -142,7 +171,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   // emoji button
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        setState(() => _showEmoji = !_showEmoji);
+                      },
                       icon: const Icon(
                         Icons.emoji_emotions,
                         color: Colors.blueAccent,
@@ -151,6 +183,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   Expanded(
                       child: TextField(
+                    onTap: () {
+                      if (_showEmoji) setState(() => _showEmoji = !_showEmoji);
+                    },
                     controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,

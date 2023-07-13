@@ -86,6 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
+          //if search is on & back button is pressed then close search
+          //or else simple close current screen on back button click
           child: WillPopScope(
             onWillPop: () {
               if (_isSearching) {
