@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/models/chat_user.dart';
+import 'package:we_chat/models/message.dart';
+import 'package:we_chat/widgets/message_card.dart';
 
 import '../main.dart';
 
@@ -15,16 +18,58 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<Message> _list = [];
+  final _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 234, 248, 255),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
         body: Column(
-          children: [_chatInput()],
+          children: [
+            Expanded(
+              child: StreamBuilder(
+                stream: APIs.getAllMessages(widget.user),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.none:
+                      return const SizedBox();
+                    case ConnectionState.active:
+                    case ConnectionState.done:
+                      final data = snapshot.data?.docs;
+                      _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+                      if (_list.isNotEmpty) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.only(top: mq.height * .01),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: _list.length,
+                          itemBuilder: (context, index) {
+                            return MessageCard(
+                              message: _list[index],
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                          child: Text(
+                            "Say Hii ! 👋",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                        );
+                      }
+                  }
+                },
+              ),
+            ),
+            _chatInput()
+          ],
         ),
       ),
     );
@@ -104,11 +149,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         size: 26,
                       )),
 
-                  const Expanded(
+                  Expanded(
                       child: TextField(
+                    controller: _textController,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Type Something...',
                       hintStyle: TextStyle(color: Colors.blueAccent),
                       border: InputBorder.none,
@@ -138,7 +184,12 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              if (_textController.text.isNotEmpty) {
+                APIs.sendMessage(widget.user, _textController.text);
+                _textController.text = '';
+              }
+            },
             minWidth: 0,
             padding: const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
             shape: const CircleBorder(),
