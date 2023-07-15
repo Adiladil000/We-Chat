@@ -44,6 +44,9 @@ dependencies:
   # for accessing Firebase Storage (for uploading files)
   firebase_storage: ^11.2.4
 
+  # for accessing Firebase messaging ( Push Notificatin)
+  firebase_messaging: ^14.6.5
+
   # for handling google sing in
   google_sign_in: ^6.1.4
 
