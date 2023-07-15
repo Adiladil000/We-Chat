@@ -61,6 +61,10 @@ dependencies:
 
   # for calling RestAPIs
   http: ^1.1.0
+
+  # for creating notification channel
+  flutter_notification_channel: ^2.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
