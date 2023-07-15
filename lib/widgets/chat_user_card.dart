@@ -57,7 +57,13 @@ class _ChatUserCardState extends State<ChatUserCard> {
                     ),
                   ),
                   title: Text(widget.user.name),
-                  subtitle: Text(_message != null ? _message!.msg : widget.user.about, maxLines: 1),
+                  subtitle: Text(
+                      _message != null
+                          ? _message!.type == Type.image
+                              ? 'image'
+                              : _message!.msg
+                          : widget.user.about,
+                      maxLines: 1),
                   trailing: _message == null
                       ? null // show nothing when no message is sent
                       : _message!.read.isEmpty && _message!.fromId != APIs.user.uid

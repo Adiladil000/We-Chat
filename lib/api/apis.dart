@@ -93,7 +93,7 @@ class APIs {
 
   // for getting all messages of a specific conversation from firestore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(ChatUser user) {
-    return firestore.collection('chats/${getConversationID(user.id)}/messages/').snapshots();
+    return firestore.collection('chats/${getConversationID(user.id)}/messages/').orderBy('sent', descending: true).snapshots();
   }
 
   // for sending message

@@ -26,7 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Message> _list = [];
   final _textController = TextEditingController();
 
-  bool _showEmoji = false;
+  bool _showEmoji = false, _isUploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           _list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
                           if (_list.isNotEmpty) {
                             return ListView.builder(
+                              reverse: true,
                               shrinkWrap: true,
                               padding: EdgeInsets.only(top: mq.height * .01),
                               physics: const BouncingScrollPhysics(),
@@ -89,6 +90,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+                if (_isUploading)
+                  const Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )),
                 _chatInput(),
                 if (_showEmoji)
                   SizedBox(
@@ -200,7 +208,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   // pick image from gallery button
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+
+                        final List<XFile> images = await picker.pickMultiImage(imageQuality: 70);
+                        for (var i in images) {
+                          log('Image path :  ${i.path}');
+                          setState(() => _isUploading = true);
+                          await APIs.sendChatImage(widget.user, File(i.path));
+                          setState(() => _isUploading = false);
+                        }
+                      },
                       icon: const Icon(
                         Icons.image,
                         color: Colors.blueAccent,
@@ -214,8 +232,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
                         if (image != null) {
                           log('Image Path : ${image.path}');
+                          setState(() => _isUploading = true);
 
                           await APIs.sendChatImage(widget.user, File(image.path));
+                          setState(() => _isUploading = false);
                         }
                       },
                       icon: const Icon(

@@ -53,8 +53,11 @@ class _MessageCardState extends State<MessageCard> {
                     child: CachedNetworkImage(
                         fit: BoxFit.cover,
                         imageUrl: widget.message.msg,
-                        placeholder: (context, url) => const CircularProgressIndicator(
-                              strokeWidth: 2,
+                        placeholder: (context, url) => const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             ),
                         errorWidget: (context, url, error) => const Icon(
                               Icons.image,
@@ -107,8 +110,11 @@ class _MessageCardState extends State<MessageCard> {
                     child: CachedNetworkImage(
                         fit: BoxFit.cover,
                         imageUrl: widget.message.msg,
-                        placeholder: (context, url) => const CircularProgressIndicator(
-                              strokeWidth: 2,
+                        placeholder: (context, url) => const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             ),
                         errorWidget: (context, url, error) => const Icon(
                               Icons.image,
