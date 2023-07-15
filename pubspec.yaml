@@ -58,6 +58,9 @@ dependencies:
 
   # emoji picker
   emoji_picker_flutter: ^1.6.1  
+
+  # for calling RestAPIs
+  http: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
