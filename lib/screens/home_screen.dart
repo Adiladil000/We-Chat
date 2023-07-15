@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    APIs.updateActiveStatus(true);
     APIs.getSelfInfo();
     SystemChannels.lifecycle.setMessageHandler((message) {
       log('Message : $message');
