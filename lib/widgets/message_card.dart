@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/helper/date_util.dart';
 import 'package:we_chat/helper/dialogs.dart';
@@ -170,14 +171,28 @@ class _MessageCardState extends State<MessageCard> {
                         Dialogs.showSnackBar(context, ' Text Copied !');
                       });
                     })
-                : _OptionItem(
+                :
+                // save image
+                _OptionItem(
                     icon: const Icon(
                       Icons.download_rounded,
                       color: Colors.blue,
                       size: 26,
                     ),
                     name: 'Save Image',
-                    onTap: () {}),
+                    onTap: () async {
+                      try {
+                        log('Image url : ${widget.message.msg}');
+                        await GallerySaver.saveImage(widget.message.msg, albumName: 'We Chat').then((success) {
+                          Navigator.pop(context);
+                          if (success != null && success) {
+                            Dialogs.showSnackBar(context, 'Image Successfully Saved !');
+                          }
+                        });
+                      } catch (e) {
+                        log('Error While Saving Image : $e');
+                      }
+                    }),
             if (isMe)
               Divider(
                 color: Colors.black54,

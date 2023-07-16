@@ -60,11 +60,14 @@ dependencies:
   emoji_picker_flutter: ^1.6.1  
 
   # for calling RestAPIs
-  http: ^1.1.0
+  http: any
 
   # for creating notification channel
   flutter_notification_channel: ^2.0.0
   
+  # for storing images into gallery
+  gallery_saver: ^2.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
