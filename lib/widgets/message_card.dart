@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/helper/date_util.dart';
+import 'package:we_chat/helper/dialogs.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/models/message.dart';
 
@@ -162,7 +164,12 @@ class _MessageCardState extends State<MessageCard> {
                       size: 26,
                     ),
                     name: 'Copy Text',
-                    onTap: () {})
+                    onTap: () async {
+                      await Clipboard.setData(ClipboardData(text: widget.message.msg)).then((value) {
+                        Navigator.pop(context);
+                        Dialogs.showSnackBar(context, ' Text Copied !');
+                      });
+                    })
                 : _OptionItem(
                     icon: const Icon(
                       Icons.download_rounded,
@@ -197,7 +204,11 @@ class _MessageCardState extends State<MessageCard> {
                     size: 26,
                   ),
                   name: 'Delete Message',
-                  onTap: () {}),
+                  onTap: () async {
+                    await APIs.deleteMessage(widget.message).then((value) {
+                      Navigator.pop(context);
+                    });
+                  }),
 
             Divider(
               color: Colors.black54,
@@ -211,7 +222,7 @@ class _MessageCardState extends State<MessageCard> {
                   color: Colors.blue,
                   size: 26,
                 ),
-                name: 'Sent At :',
+                name: 'Sent At : ${DateUtil.getMessageTime(context: context, time: widget.message.sent)}',
                 onTap: () {}),
 
             // read option
@@ -221,7 +232,9 @@ class _MessageCardState extends State<MessageCard> {
                   color: Colors.green,
                   size: 26,
                 ),
-                name: 'Read At :',
+                name: widget.message.read.isNotEmpty
+                    ? 'Read At : ${DateUtil.getMessageTime(context: context, time: widget.message.sent)}'
+                    : 'Read At : Not seen yet  ',
                 onTap: () {}),
           ],
         );
@@ -239,7 +252,7 @@ class _OptionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onTap,
+      onTap: onTap,
       child: Padding(
         padding: EdgeInsets.only(
           left: mq.width * .05,
