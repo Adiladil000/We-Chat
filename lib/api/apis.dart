@@ -225,4 +225,11 @@ class APIs {
       await storage.refFromURL(message.msg).delete();
     }
   }
+
+  // update message
+  static Future<void> updateMessage(Message message, String updatedMsg) async {
+    await firestore.collection('chats/${getConversationID(message.toId)}/messages/').doc(message.sent).update({
+      'msg': updatedMsg,
+    });
+  }
 }
