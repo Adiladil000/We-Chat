@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/models/chat_user.dart';
@@ -86,15 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 )
               : const Text("We Chat"),
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: FloatingActionButton(
-              onPressed: () async {
-                await APIs.auth.signOut();
-                await GoogleSignIn().signIn();
-              },
-              child: const Icon(Icons.add_comment_rounded)),
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
